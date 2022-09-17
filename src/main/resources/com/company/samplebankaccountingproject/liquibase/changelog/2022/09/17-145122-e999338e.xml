@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.11.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1" author="sampleBankAccountingProject">
+        <createTable tableName="CUSTOMER">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_CUSTOMER"/>
+            </column>
+            <column name="DTYPE" type="VARCHAR(10)"/>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="TYPE_" type="VARCHAR(6)"/>
+            <column name="ADDRESS" type="VARCHAR(500)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="sampleBankAccountingProject">
+        <createTable tableName="CUSTOMER_LEGAL">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_CUSTOMER_LEGAL"/>
+            </column>
+            <column name="INN" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="KPP" type="VARCHAR(9)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OGRN" type="VARCHAR(13)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="3" author="sampleBankAccountingProject">
+        <createTable tableName="CUSTOMER_PRIVATE">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_CUSTOMER_PRIVATE"/>
+            </column>
+            <column name="PASSPORT_ID" type="VARCHAR(11)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LEGAL_AUTHORITY" type="VARCHAR(1000)"/>
+            <column name="PASSPORT_ISSUE_DATE" type="DATE"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="4" author="sampleBankAccountingProject">
+        <addForeignKeyConstraint baseColumnNames="ID" baseTableName="CUSTOMER_LEGAL"
+                                 constraintName="FK_CUSTOMER_LEGAL_ON_ID" referencedColumnNames="ID"
+                                 referencedTableName="CUSTOMER"/>
+    </changeSet>
+    <changeSet id="5" author="sampleBankAccountingProject">
+        <addForeignKeyConstraint baseColumnNames="ID" baseTableName="CUSTOMER_PRIVATE"
+                                 constraintName="FK_CUSTOMER_PRIVATE_ON_ID" referencedColumnNames="ID"
+                                 referencedTableName="CUSTOMER"/>
+    </changeSet>
+</databaseChangeLog>
