@@ -1,5 +1,6 @@
 package com.company.samplebankaccountingproject.app;
 
+import com.company.samplebankaccountingproject.entity.Customer;
 import com.company.samplebankaccountingproject.entity.CustomerLegal;
 import com.company.samplebankaccountingproject.entity.CustomerPrivate;
 import com.company.samplebankaccountingproject.entity.ODataSettings;
@@ -47,7 +48,8 @@ public class ExchangeOData {
                 client.newURIBuilder(baseURL)
                         .appendEntitySetSegment("Catalog_Контрагенты")
                         .addCustomQueryOption("$select",
-                                "Ref_Key,Description,ИНН,КПП,ЮридическоеФизическоеЛицо,РегистрационныйНомер")
+                                "Ref_Key,Description,ИНН,КПП,ЮридическоеФизическоеЛицо," +
+                                        "РегистрационныйНомер,ДокументУдостоверяющийЛичность")
                         .addCustomQueryOption("$filter", "IsFolder eq false")
                         .build();
 
@@ -62,24 +64,38 @@ public class ExchangeOData {
         while (iterator.hasNext()) {
             ClientEntity ce = iterator.next();
             String type = ce.getProperty("ЮридическоеФизическоеЛицо").getValue().toString();
+            String id1C = ce.getProperty("Ref_Key").getValue().toString();
             if (type.equals("ЮридическоеЛицо")) {
-                CustomerLegal customer = dataManager.create(CustomerLegal.class);
-                customer.setType("LEGAL");
-                customer.setId(UUID.randomUUID());
-                customer.setId1C(ce.getProperty("Ref_Key").getValue().toString());
-                customer.setName(ce.getProperty("Description").getValue().toString());
-                customer.setInn(ce.getProperty("ИНН").getValue().toString());
-                customer.setKpp(ce.getProperty("КПП").getValue().toString());
-                customer.setOgrn(ce.getProperty("РегистрационныйНомер").getValue().toString());
-                dataManager.save(customer);
+                if (!isCustomerPresent(id1C)) {
+                    CustomerLegal customer = dataManager.create(CustomerLegal.class);
+                    customer.setType("LEGAL");
+                    customer.setId(UUID.randomUUID());
+                    customer.setId1C(id1C);
+                    customer.setName(ce.getProperty("Description").getValue().toString());
+                    customer.setInn(ce.getProperty("ИНН").getValue().toString());
+                    customer.setKpp(ce.getProperty("КПП").getValue().toString());
+                    customer.setOgrn(ce.getProperty("РегистрационныйНомер").getValue().toString());
+                    dataManager.save(customer);
+                }
             } else if (type.equals("ФизическоеЛицо")) {
-                CustomerPrivate customer = dataManager.create(CustomerPrivate.class);
-                customer.setType("PRIVATE");
-                customer.setId(UUID.randomUUID());
-                customer.setId1C(ce.getProperty("Ref_Key").getValue().toString());
-                customer.setName(ce.getProperty("Description").getValue().toString());
+                if (!isCustomerPresent(id1C)) {
+                    CustomerPrivate customer = dataManager.create(CustomerPrivate.class);
+                    customer.setType("PRIVATE");
+                    customer.setId(UUID.randomUUID());
+                    customer.setId1C(id1C);
+                    customer.setName(ce.getProperty("Description").getValue().toString());
+                    customer.setPassportID("");
+                    dataManager.save(customer);
+                }
             }
         }
+    }
+
+    private Boolean isCustomerPresent(String id1C) {
+        return dataManager.load(Customer.class)
+                .query("e.id1C = ?1", id1C)
+                .optional()
+                .isPresent();
     }
 
 }
