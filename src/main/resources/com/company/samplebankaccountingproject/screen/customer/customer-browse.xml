@@ -43,6 +43,7 @@
                 dataLoader="customersDl">
             <properties include=".*"/>
         </filter>
+        <button id="customersLoadBtn" caption="msg://customersLoad.caption"/>
         <groupTable id="customersTable"
                     width="100%"
                     dataContainer="customersDc">

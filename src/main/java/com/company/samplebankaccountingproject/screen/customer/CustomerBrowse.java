@@ -1,5 +1,6 @@
 package com.company.samplebankaccountingproject.screen.customer;
 
+import com.company.samplebankaccountingproject.app.ExchangeOData;
 import com.company.samplebankaccountingproject.entity.CustomerLegal;
 import com.company.samplebankaccountingproject.entity.CustomerPrivate;
 import com.company.samplebankaccountingproject.entity.CustomerType;
@@ -10,11 +11,9 @@ import io.jmix.ui.Notifications;
 import io.jmix.ui.ScreenBuilders;
 import io.jmix.ui.app.inputdialog.DialogOutcome;
 import io.jmix.ui.app.inputdialog.InputDialog;
-import io.jmix.ui.component.Component;
+import io.jmix.ui.component.Button;
 import io.jmix.ui.component.GroupTable;
-import io.jmix.ui.component.Table;
 import io.jmix.ui.model.CollectionLoader;
-import io.jmix.ui.model.DataContext;
 import io.jmix.ui.screen.*;
 import com.company.samplebankaccountingproject.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,8 @@ public class CustomerBrowse extends StandardLookup<Customer> {
     private GroupTable<Customer> customersTable;
     @Autowired
     private CollectionLoader<Customer> customersDl;
+    @Autowired
+    private ExchangeOData exchangeOData;
 
     @Subscribe("CustomerTypeinputDialog")
     public void onCustomerTypeinputDialogInputDialogClose(InputDialog.InputDialogCloseEvent event) {
@@ -63,4 +64,8 @@ public class CustomerBrowse extends StandardLookup<Customer> {
         }
     }
 
+    @Subscribe("customersLoadBtn")
+    public void onCustomersLoadBtnClick(Button.ClickEvent event) {
+        exchangeOData.loadCustomers();
+    }
 }

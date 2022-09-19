@@ -29,6 +29,17 @@ public class Customer {
     @Column(name = "ADDRESS", length = 500)
     private String address;
 
+    @Column(name = "ID1C", length = 50)
+    private String id1C;
+
+    public String getId1C() {
+        return id1C;
+    }
+
+    public void setId1C(String id1C) {
+        this.id1C = id1C;
+    }
+
     public void setType(String type) {
         this.type = type;
     }

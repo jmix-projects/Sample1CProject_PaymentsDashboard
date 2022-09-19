@@ -40,6 +40,13 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     implementation 'org.postgresql:postgresql'
+
+    implementation 'org.apache.olingo:odata-commons-api:4.9.0'
+    implementation 'org.apache.olingo:odata-commons-core:4.9.0'
+    implementation 'org.apache.olingo:odata-client-api:4.9.0'
+    implementation 'org.apache.olingo:odata-client-core:4.9.0'
+    implementation 'io.jmix.appsettings:jmix-appsettings-ui-starter'
+    implementation 'io.jmix.appsettings:jmix-appsettings-starter'
 }
 
 test {
