@@ -18,9 +18,6 @@ import io.jmix.ui.screen.*;
 import com.company.samplebankaccountingproject.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.rmi.RemoteException;
-import java.util.concurrent.TimeoutException;
-
 @UiController("Customer.browse")
 @UiDescriptor("customer-browse.xml")
 @LookupComponent("customersTable")
@@ -71,6 +68,7 @@ public class CustomerBrowse extends StandardLookup<Customer> {
     public void onCustomersLoadBtnClick(Button.ClickEvent event) {
         try {
             exchangeOData.loadCustomers();
+            customersDl.load();
         } catch (Exception e) {
             notifications.create(Notifications.NotificationType.ERROR)
                     .withCaption("Load customers error")
