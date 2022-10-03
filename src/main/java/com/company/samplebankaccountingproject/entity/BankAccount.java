@@ -29,6 +29,17 @@ public class BankAccount {
     @Column(name = "ACCOUNT_NUMBER", length = 34)
     private String accountNumber;
 
+    @Column(name = "ID1C", length = 50)
+    private String id1C;
+
+    public String getId1C() {
+        return id1C;
+    }
+
+    public void setId1C(String id1C) {
+        this.id1C = id1C;
+    }
+
     public String getAccountNumber() {
         return accountNumber;
     }

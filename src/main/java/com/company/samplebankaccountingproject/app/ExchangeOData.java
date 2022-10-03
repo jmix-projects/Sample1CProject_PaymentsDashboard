@@ -128,14 +128,15 @@ public class ExchangeOData {
 
             String description = ce.getProperty("Description").getValue().toString();
             if (dataManager.load(IncomingDescription.class)
-                    .query("select c from IncomingDescription c where c.description = :description")
-                    .parameter("description", description)
+                    .query("select c from IncomingDescription c where c.name = :name")
+                    .parameter("name", description)
                     .optional()
                     .isEmpty())
             {
                 IncomingDescription entity = dataManager.create(IncomingDescription.class);
                 entity.setId(UUID.randomUUID());
                 entity.setName(description);
+                entity.setId1C(ce.getProperty("Ref_Key").getValue().toString());
                 dataManager.save(entity);
             }
         }
@@ -150,7 +151,7 @@ public class ExchangeOData {
                 client.newURIBuilder(baseURL)
                         .appendEntitySetSegment("Catalog_БанковскиеСчета")
                         .addCustomQueryOption("$select",
-                                "Ref_Key,Description,НомерСчета,Owner")
+                                "Ref_Key,Description,НомерСчета,Owner,Owner_Type")
                         .build();
 
         ClientEntitySetIterator<ClientEntitySet, ClientEntity> iterator = getIterator(customURI);
@@ -166,12 +167,16 @@ public class ExchangeOData {
                     .isEmpty())
             {
                 String owner = ce.getProperty("Owner").getValue().toString();
-                Optional<Customer> optional = dataManager.load(Customer.class).id(owner).optional();
+                Optional<Customer> optional = dataManager.load(Customer.class)
+                        .query("select c from Customer c where c.id1C = :id1C1")
+                        .parameter("id1C1", owner)
+                        .optional();
                 if (optional.isEmpty()) {
                     BankAccount entity = dataManager.create(BankAccount.class);
                     entity.setId(UUID.randomUUID());
                     entity.setAccountNumber(accountNumber);
                     entity.setName(ce.getProperty("Description").getValue().toString());
+                    entity.setId1C(ce.getProperty("Ref_Key").getValue().toString());
                     dataManager.save(entity);
                 }
             }

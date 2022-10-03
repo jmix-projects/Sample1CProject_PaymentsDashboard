@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.11.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1" author="sampleBankAccountingProject">
+        <createTable tableName="PAYMENT">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PAYMENT"/>
+            </column>
+            <column name="DATE_" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NUMBER_" type="VARCHAR(20)"/>
+            <column name="CUSTOMER_ID" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INCOMING_DESCRIPTION_ID" type="UUID"/>
+            <column name="BANK_ACCOUNT_ID" type="UUID"/>
+            <column name="SUM_" type="DECIMAL(15, 2)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="sampleBankAccountingProject">
+        <addColumn tableName="BANK_ACCOUNT">
+            <column name="ID1C" type="VARCHAR(50)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="3" author="sampleBankAccountingProject">
+        <addColumn tableName="INCOMING_DESCRIPTION">
+            <column name="ID1C" type="VARCHAR(50)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="4" author="sampleBankAccountingProject">
+        <createIndex indexName="IDX_PAYMENT_BANK_ACCOUNT" tableName="PAYMENT">
+            <column name="BANK_ACCOUNT_ID"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="BANK_ACCOUNT_ID" baseTableName="PAYMENT"
+                                 constraintName="FK_PAYMENT_ON_BANK_ACCOUNT" referencedColumnNames="ID"
+                                 referencedTableName="BANK_ACCOUNT"/>
+    </changeSet>
+    <changeSet id="5" author="sampleBankAccountingProject">
+        <createIndex indexName="IDX_PAYMENT_CUSTOMER" tableName="PAYMENT">
+            <column name="CUSTOMER_ID"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="CUSTOMER_ID" baseTableName="PAYMENT"
+                                 constraintName="FK_PAYMENT_ON_CUSTOMER" referencedColumnNames="ID"
+                                 referencedTableName="CUSTOMER"/>
+    </changeSet>
+    <changeSet id="6" author="sampleBankAccountingProject">
+        <createIndex indexName="IDX_PAYMENT_INCOMINGDESCRIPTIO" tableName="PAYMENT">
+            <column name="INCOMING_DESCRIPTION_ID"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="INCOMING_DESCRIPTION_ID" baseTableName="PAYMENT"
+                                 constraintName="FK_PAYMENT_ON_INCOMINGDESCRIPT" referencedColumnNames="ID"
+                                 referencedTableName="INCOMING_DESCRIPTION"/>
+    </changeSet>
+</databaseChangeLog>
