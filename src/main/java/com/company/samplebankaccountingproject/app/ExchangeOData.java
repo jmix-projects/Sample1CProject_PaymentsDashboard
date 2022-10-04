@@ -12,7 +12,10 @@ import org.apache.olingo.client.core.http.BasicAuthHttpClientFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -47,6 +50,15 @@ public class ExchangeOData {
         return response.getBody();
     }
 
+    private String getStringValue(ClientEntity ce, String property) {
+        ClientProperty clientProperty = ce.getProperty(property);
+        if (clientProperty != null) {
+            return clientProperty.getValue().toString();
+        } else {
+            return null;
+        }
+    }
+
     public void loadCustomers() {
         ODataSettings oDataSettings = appSettings.load(ODataSettings.class);
 
@@ -65,27 +77,32 @@ public class ExchangeOData {
 
         while (iterator.hasNext()) {
             ClientEntity ce = iterator.next();
-            String type = ce.getProperty("ЮридическоеФизическоеЛицо").getValue().toString();
-            String id1C = ce.getProperty("Ref_Key").getValue().toString();
+            String type = getStringValue(ce, "ЮридическоеФизическоеЛицо");
+            String id1C = getStringValue(ce, "Ref_Key");
+
+            if (type == null || id1C == null) {
+                continue;
+            }
 
             if (type.equals("ЮридическоеЛицо")) {
 
-                String inn = ce.getProperty("ИНН").getValue().toString();
-                if (dataManager.load(CustomerLegal.class)
-                        .query("select c from CustomerLegal c where c.inn = :inn1")
-                        .parameter("inn1", inn)
-                        .optional()
-                        .isEmpty())
-                {
-                    CustomerLegal customer = dataManager.create(CustomerLegal.class);
-                    customer.setType("LEGAL");
-                    customer.setId(UUID.randomUUID());
-                    customer.setId1C(id1C);
-                    customer.setName(ce.getProperty("Description").getValue().toString());
-                    customer.setInn(ce.getProperty("ИНН").getValue().toString());
-                    customer.setKpp(ce.getProperty("КПП").getValue().toString());
-                    customer.setOgrn(ce.getProperty("РегистрационныйНомер").getValue().toString());
-                    dataManager.save(customer);
+                String inn = getStringValue(ce, "ИНН");
+                if (inn != null) {
+                    if (dataManager.load(CustomerLegal.class)
+                            .query("select c from CustomerLegal c where c.inn = :inn1")
+                            .parameter("inn1", inn)
+                            .optional()
+                            .isEmpty()) {
+                        CustomerLegal customer = dataManager.create(CustomerLegal.class);
+                        customer.setType("LEGAL");
+                        customer.setId(UUID.randomUUID());
+                        customer.setId1C(id1C);
+                        customer.setName(getStringValue(ce, "Description"));
+                        customer.setInn(getStringValue(ce, "ИНН"));
+                        customer.setKpp(getStringValue(ce, "КПП"));
+                        customer.setOgrn(getStringValue(ce, "РегистрационныйНомер"));
+                        dataManager.save(customer);
+                    }
                 }
 
             } else if (type.equals("ФизическоеЛицо")) {
@@ -94,13 +111,12 @@ public class ExchangeOData {
                         .query("select c from CustomerPrivate c where c.id1C = :id1C1")
                         .parameter("id1C1", id1C)
                         .optional()
-                        .isEmpty())
-                {
+                        .isEmpty()) {
                     CustomerPrivate customer = dataManager.create(CustomerPrivate.class);
                     customer.setType("PRIVATE");
                     customer.setId(UUID.randomUUID());
                     customer.setId1C(id1C);
-                    customer.setName(ce.getProperty("Description").getValue().toString());
+                    customer.setName(getStringValue(ce, "Description"));
                     customer.setPassportID("");
                     dataManager.save(customer);
                 }
@@ -126,18 +142,19 @@ public class ExchangeOData {
         while (iterator.hasNext()) {
             ClientEntity ce = iterator.next();
 
-            String description = ce.getProperty("Description").getValue().toString();
-            if (dataManager.load(IncomingDescription.class)
-                    .query("select c from IncomingDescription c where c.name = :name")
-                    .parameter("name", description)
-                    .optional()
-                    .isEmpty())
-            {
-                IncomingDescription entity = dataManager.create(IncomingDescription.class);
-                entity.setId(UUID.randomUUID());
-                entity.setName(description);
-                entity.setId1C(ce.getProperty("Ref_Key").getValue().toString());
-                dataManager.save(entity);
+            String description = getStringValue(ce, "Description");
+            if (description != null) {
+                if (dataManager.load(IncomingDescription.class)
+                        .query("select c from IncomingDescription c where c.name = :name")
+                        .parameter("name", description)
+                        .optional()
+                        .isEmpty()) {
+                    IncomingDescription entity = dataManager.create(IncomingDescription.class);
+                    entity.setId(UUID.randomUUID());
+                    entity.setName(description);
+                    entity.setId1C(getStringValue(ce, "Ref_Key"));
+                    dataManager.save(entity);
+                }
             }
         }
     }
@@ -159,25 +176,28 @@ public class ExchangeOData {
         while (iterator.hasNext()) {
             ClientEntity ce = iterator.next();
 
-            String accountNumber = ce.getProperty("НомерСчета").getValue().toString();
-            if (dataManager.load(BankAccount.class)
-                    .query("select c from BankAccount c where c.accountNumber = :accountNumber")
-                    .parameter("accountNumber", accountNumber)
-                    .optional()
-                    .isEmpty())
-            {
-                String owner = ce.getProperty("Owner").getValue().toString();
-                Optional<Customer> optional = dataManager.load(Customer.class)
-                        .query("select c from Customer c where c.id1C = :id1C1")
-                        .parameter("id1C1", owner)
-                        .optional();
-                if (optional.isEmpty()) {
-                    BankAccount entity = dataManager.create(BankAccount.class);
-                    entity.setId(UUID.randomUUID());
-                    entity.setAccountNumber(accountNumber);
-                    entity.setName(ce.getProperty("Description").getValue().toString());
-                    entity.setId1C(ce.getProperty("Ref_Key").getValue().toString());
-                    dataManager.save(entity);
+            String accountNumber = getStringValue(ce, "НомерСчета");
+            if (accountNumber != null) {
+                if (dataManager.load(BankAccount.class)
+                        .query("select c from BankAccount c where c.accountNumber = :accountNumber")
+                        .parameter("accountNumber", accountNumber)
+                        .optional()
+                        .isEmpty()) {
+                    String owner = getStringValue(ce, "Owner");
+                    if (owner != null) {
+                        Optional<Customer> optional = dataManager.load(Customer.class)
+                                .query("select c from Customer c where c.id1C = :id1C1")
+                                .parameter("id1C1", owner)
+                                .optional();
+                        if (optional.isEmpty()) {
+                            BankAccount entity = dataManager.create(BankAccount.class);
+                            entity.setId(UUID.randomUUID());
+                            entity.setAccountNumber(accountNumber);
+                            entity.setName(getStringValue(ce, "Description"));
+                            entity.setId1C(getStringValue(ce, "Ref_Key"));
+                            dataManager.save(entity);
+                        }
+                    }
                 }
             }
         }
@@ -216,12 +236,22 @@ public class ExchangeOData {
 
         ClientEntitySetIterator<ClientEntitySet, ClientEntity> docIterator = getIterator(docURI);
 
-        Double totalSum = .0;
         while (docIterator.hasNext()) {
             ClientEntity ce = docIterator.next();
 
-            String refKey = ce.getProperty("Ref_Key").getValue().toString();
-            String docNumber = ce.getProperty("Number").getValue().toString();
+            String refKey = getStringValue(ce, "Ref_Key");
+            String docNumber = getStringValue(ce, "Number");
+            if (docNumber == null) {
+                continue;
+            }
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date docDate = null;
+            try {
+                docDate = dateFormat.parse(ce.getProperty("Date").getValue().toString());
+            } catch (ParseException | NullPointerException e) {
+                continue;
+            }
 
             ClientEntity ceTable = table.get(refKey);
             //String order = ceTable.getProperty("СчетНаОплату").getValue().toString();
@@ -234,7 +264,47 @@ public class ExchangeOData {
                     sum = Double.valueOf((Integer) cv.toValue());
                 }
             }
-            totalSum += sum;
+
+            Optional<Payment> optional = dataManager.load(Payment.class)
+                    .query("select p from Payment p where p.number = :number1 and p.date = :date1")
+                    .parameter("number1", docNumber)
+                    .parameter("date1", docDate)
+                    .optional();
+            if (optional.isEmpty()) {
+                Payment payment = dataManager.create(Payment.class);
+                payment.setId(UUID.randomUUID());
+                payment.setNumber(docNumber);
+                payment.setDate(docDate);
+                payment.setSum(BigDecimal.valueOf(sum));
+
+                String customerId = getStringValue(ce, "Контрагент");
+                if (customerId != null) {
+                    Optional<Customer> customer =
+                            dataManager.load(Customer.class)
+                                    .query("select c from Customer c where c.id1C = :id1C1")
+                                    .parameter("id1C1", customerId)
+                                    .optional();
+                    if (customer.isPresent()) {
+                        payment.setCustomer(customer.get());
+                    } else {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+
+                String bankAccountId = getStringValue(ce, "СчетОрганизации");
+                if (bankAccountId != null) {
+                    Optional<BankAccount> bankAccount =
+                            dataManager.load(BankAccount.class)
+                                    .query("select b from BankAccount b where b.id1C = :id1C1")
+                                    .parameter("id1C1", bankAccountId)
+                                    .optional();
+                    bankAccount.ifPresent(payment::setBankAccount);
+                }
+
+                dataManager.save(payment);
+            }
         }
     }
 }
