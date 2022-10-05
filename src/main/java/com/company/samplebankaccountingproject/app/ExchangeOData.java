@@ -50,12 +50,26 @@ public class ExchangeOData {
         return response.getBody();
     }
 
-    private String getStringValue(ClientEntity ce, String property) {
+    private Optional<String> getStringValue(ClientEntity ce, String property) {
         ClientProperty clientProperty = ce.getProperty(property);
         if (clientProperty != null) {
-            return clientProperty.getValue().toString();
+            return Optional.of(clientProperty.getValue().toString());
         } else {
-            return null;
+            return Optional.empty();
+        }
+    }
+
+    private Optional<Date> getDateValue(ClientEntity ce, String property) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Optional<String> date = getStringValue(ce, property);
+        if (date.isPresent()) {
+            try {
+                return Optional.of(dateFormat.parse(date.get()));
+            } catch (ParseException | NullPointerException e) {
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
         }
     }
 
@@ -77,46 +91,45 @@ public class ExchangeOData {
 
         while (iterator.hasNext()) {
             ClientEntity ce = iterator.next();
-            String type = getStringValue(ce, "ЮридическоеФизическоеЛицо");
-            String id1C = getStringValue(ce, "Ref_Key");
-
-            if (type == null || id1C == null) {
+            Optional<String> type = getStringValue(ce, "ЮридическоеФизическоеЛицо");
+            Optional<String> id1C = getStringValue(ce, "Ref_Key");
+            if (type.isEmpty() || id1C.isEmpty()) {
                 continue;
             }
 
-            if (type.equals("ЮридическоеЛицо")) {
+            if (type.get().equals("ЮридическоеЛицо")) {
 
-                String inn = getStringValue(ce, "ИНН");
-                if (inn != null) {
+                Optional<String> inn = getStringValue(ce, "ИНН");
+                if (inn.isPresent()) {
                     if (dataManager.load(CustomerLegal.class)
                             .query("select c from CustomerLegal c where c.inn = :inn1")
-                            .parameter("inn1", inn)
+                            .parameter("inn1", inn.get())
                             .optional()
                             .isEmpty()) {
                         CustomerLegal customer = dataManager.create(CustomerLegal.class);
                         customer.setType("LEGAL");
                         customer.setId(UUID.randomUUID());
-                        customer.setId1C(id1C);
-                        customer.setName(getStringValue(ce, "Description"));
-                        customer.setInn(getStringValue(ce, "ИНН"));
-                        customer.setKpp(getStringValue(ce, "КПП"));
-                        customer.setOgrn(getStringValue(ce, "РегистрационныйНомер"));
+                        customer.setId1C(id1C.get());
+                        getStringValue(ce, "Description").ifPresent(customer::setName);
+                        getStringValue(ce, "ИНН").ifPresent(customer::setInn);
+                        getStringValue(ce, "КПП").ifPresent(customer::setKpp);
+                        getStringValue(ce, "РегистрационныйНомер").ifPresent(customer::setOgrn);
                         dataManager.save(customer);
                     }
                 }
 
-            } else if (type.equals("ФизическоеЛицо")) {
+            } else if (type.get().equals("ФизическоеЛицо")) {
 
                 if (dataManager.load(CustomerPrivate.class)
                         .query("select c from CustomerPrivate c where c.id1C = :id1C1")
-                        .parameter("id1C1", id1C)
+                        .parameter("id1C1", id1C.get())
                         .optional()
                         .isEmpty()) {
                     CustomerPrivate customer = dataManager.create(CustomerPrivate.class);
                     customer.setType("PRIVATE");
                     customer.setId(UUID.randomUUID());
-                    customer.setId1C(id1C);
-                    customer.setName(getStringValue(ce, "Description"));
+                    customer.setId1C(id1C.get());
+                    getStringValue(ce, "Description").ifPresent(customer::setName);
                     customer.setPassportID("");
                     dataManager.save(customer);
                 }
@@ -142,17 +155,17 @@ public class ExchangeOData {
         while (iterator.hasNext()) {
             ClientEntity ce = iterator.next();
 
-            String description = getStringValue(ce, "Description");
-            if (description != null) {
+            Optional<String> description = getStringValue(ce, "Description");
+            if (description.isPresent()) {
                 if (dataManager.load(IncomingDescription.class)
                         .query("select c from IncomingDescription c where c.name = :name")
-                        .parameter("name", description)
+                        .parameter("name", description.get())
                         .optional()
                         .isEmpty()) {
                     IncomingDescription entity = dataManager.create(IncomingDescription.class);
                     entity.setId(UUID.randomUUID());
-                    entity.setName(description);
-                    entity.setId1C(getStringValue(ce, "Ref_Key"));
+                    entity.setName(description.get());
+                    getStringValue(ce, "Ref_Key").ifPresent(entity::setId1C);
                     dataManager.save(entity);
                 }
             }
@@ -176,25 +189,26 @@ public class ExchangeOData {
         while (iterator.hasNext()) {
             ClientEntity ce = iterator.next();
 
-            String accountNumber = getStringValue(ce, "НомерСчета");
-            if (accountNumber != null) {
+            Optional<String> accountNumber = getStringValue(ce, "НомерСчета");
+            if (accountNumber.isPresent()) {
                 if (dataManager.load(BankAccount.class)
-                        .query("select c from BankAccount c where c.accountNumber = :accountNumber")
-                        .parameter("accountNumber", accountNumber)
+                        .query("select c from BankAccount c " +
+                                "where c.accountNumber = :accountNumber")
+                        .parameter("accountNumber", accountNumber.get())
                         .optional()
                         .isEmpty()) {
-                    String owner = getStringValue(ce, "Owner");
-                    if (owner != null) {
-                        Optional<Customer> optional = dataManager.load(Customer.class)
+                    Optional<String> owner = getStringValue(ce, "Owner");
+                    if (owner.isPresent()) {
+                        if (dataManager.load(Customer.class)
                                 .query("select c from Customer c where c.id1C = :id1C1")
-                                .parameter("id1C1", owner)
-                                .optional();
-                        if (optional.isEmpty()) {
+                                .parameter("id1C1", owner.get())
+                                .optional()
+                                .isEmpty()) {
                             BankAccount entity = dataManager.create(BankAccount.class);
                             entity.setId(UUID.randomUUID());
-                            entity.setAccountNumber(accountNumber);
-                            entity.setName(getStringValue(ce, "Description"));
-                            entity.setId1C(getStringValue(ce, "Ref_Key"));
+                            entity.setAccountNumber(accountNumber.get());
+                            getStringValue(ce, "Description").ifPresent(entity::setName);
+                            getStringValue(ce, "Ref_Key").ifPresent(entity::setId1C);
                             dataManager.save(entity);
                         }
                     }
@@ -221,8 +235,8 @@ public class ExchangeOData {
         while (tabIterator.hasNext()) {
             ClientEntity ce = tabIterator.next();
 
-            String refKey = ce.getProperty("Ref_Key").getValue().toString();
-            table.put(refKey, ce);
+            Optional<String> refKey = getStringValue(ce, "Ref_Key");
+            refKey.ifPresent(s -> table.put(s, ce));
         }
 
         URI docURI =
@@ -239,22 +253,14 @@ public class ExchangeOData {
         while (docIterator.hasNext()) {
             ClientEntity ce = docIterator.next();
 
-            String refKey = getStringValue(ce, "Ref_Key");
-            String docNumber = getStringValue(ce, "Number");
-            if (docNumber == null) {
+            Optional<String> refKey = getStringValue(ce, "Ref_Key");
+            Optional<String> docNumber = getStringValue(ce, "Number");
+            Optional<Date> docDate = getDateValue(ce, "Date");
+            if (refKey.isEmpty() || docNumber.isEmpty() || docDate.isEmpty()) {
                 continue;
             }
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            Date docDate = null;
-            try {
-                docDate = dateFormat.parse(ce.getProperty("Date").getValue().toString());
-            } catch (ParseException | NullPointerException e) {
-                continue;
-            }
-
-            ClientEntity ceTable = table.get(refKey);
-            //String order = ceTable.getProperty("СчетНаОплату").getValue().toString();
+            ClientEntity ceTable = table.get(refKey.get());
             ClientPrimitiveValue cv = ceTable.getProperty("СуммаПлатежа").getPrimitiveValue();
             Double sum = .0;
             if (cv != null) {
@@ -266,23 +272,24 @@ public class ExchangeOData {
             }
 
             Optional<Payment> optional = dataManager.load(Payment.class)
-                    .query("select p from Payment p where p.number = :number1 and p.date = :date1")
-                    .parameter("number1", docNumber)
-                    .parameter("date1", docDate)
+                    .query("select p from Payment p " +
+                            "where p.number = :number1 and p.date = :date1")
+                    .parameter("number1", docNumber.get())
+                    .parameter("date1", docDate.get())
                     .optional();
             if (optional.isEmpty()) {
                 Payment payment = dataManager.create(Payment.class);
                 payment.setId(UUID.randomUUID());
-                payment.setNumber(docNumber);
-                payment.setDate(docDate);
+                payment.setNumber(docNumber.get());
+                payment.setDate(docDate.get());
                 payment.setSum(BigDecimal.valueOf(sum));
 
-                String customerId = getStringValue(ce, "Контрагент");
-                if (customerId != null) {
+                Optional<String> customerId = getStringValue(ce, "Контрагент");
+                if (customerId.isPresent()) {
                     Optional<Customer> customer =
                             dataManager.load(Customer.class)
                                     .query("select c from Customer c where c.id1C = :id1C1")
-                                    .parameter("id1C1", customerId)
+                                    .parameter("id1C1", customerId.get())
                                     .optional();
                     if (customer.isPresent()) {
                         payment.setCustomer(customer.get());
@@ -293,14 +300,13 @@ public class ExchangeOData {
                     continue;
                 }
 
-                String bankAccountId = getStringValue(ce, "СчетОрганизации");
-                if (bankAccountId != null) {
-                    Optional<BankAccount> bankAccount =
-                            dataManager.load(BankAccount.class)
-                                    .query("select b from BankAccount b where b.id1C = :id1C1")
-                                    .parameter("id1C1", bankAccountId)
-                                    .optional();
-                    bankAccount.ifPresent(payment::setBankAccount);
+                Optional<String> bankAccountId = getStringValue(ce, "СчетОрганизации");
+                if (bankAccountId.isPresent()) {
+                    dataManager.load(BankAccount.class)
+                            .query("select b from BankAccount b where b.id1C = :id1C1")
+                            .parameter("id1C1", bankAccountId)
+                            .optional()
+                            .ifPresent(payment::setBankAccount);
                 }
 
                 dataManager.save(payment);
