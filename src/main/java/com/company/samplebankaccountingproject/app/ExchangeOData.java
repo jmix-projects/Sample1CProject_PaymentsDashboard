@@ -221,6 +221,10 @@ public class ExchangeOData {
         ODataSettings oDataSettings = appSettings.load(ODataSettings.class);
 
         String baseURL = oDataSettings.getODataURL();
+        Date startDate = oDataSettings.getStartDate();
+        if (startDate == null) {
+            startDate = new Date(System.currentTimeMillis());
+        }
 
         URI tabURI =
                 client.newURIBuilder(baseURL)
@@ -239,13 +243,17 @@ public class ExchangeOData {
             refKey.ifPresent(s -> table.put(s, ce));
         }
 
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
         URI docURI =
                 client.newURIBuilder(baseURL)
                         .appendEntitySetSegment("Document_ПоступлениеНаРасчетныйСчет")
                         .addCustomQueryOption("$select",
-                                "Ref_Key,Date,Number,СчетОрганизации,Контрагент,ВидОперации")
+                                "Ref_Key,Date,Number,СчетОрганизации_Key,Контрагент," +
+                                        "ВидОперации,СтатьяДвиженияДенежныхСредств_Key")
                         .addCustomQueryOption("$filter",
-                                "ВидОперации eq 'ОплатаПокупателя'")
+                                "ВидОперации eq 'ОплатаПокупателя'" +
+                                        " and Date ge datetime'" + formatter.format(startDate) + "T00:00:00'")
                         .build();
 
         ClientEntitySetIterator<ClientEntitySet, ClientEntity> docIterator = getIterator(docURI);
@@ -300,14 +308,17 @@ public class ExchangeOData {
                     continue;
                 }
 
-                Optional<String> bankAccountId = getStringValue(ce, "СчетОрганизации");
-                if (bankAccountId.isPresent()) {
-                    dataManager.load(BankAccount.class)
-                            .query("select b from BankAccount b where b.id1C = :id1C1")
-                            .parameter("id1C1", bankAccountId)
-                            .optional()
-                            .ifPresent(payment::setBankAccount);
-                }
+                Optional<String> bankAccountId = getStringValue(ce, "СчетОрганизации_Key");
+                bankAccountId.flatMap(s -> dataManager.load(BankAccount.class)
+                        .query("select b from BankAccount b where b.id1C = :id1C1")
+                        .parameter("id1C1", s)
+                        .optional()).ifPresent(payment::setBankAccount);
+
+                Optional<String> incomingDescriptionId = getStringValue(ce, "СтатьяДвиженияДенежныхСредств_Key");
+                incomingDescriptionId.flatMap(s -> dataManager.load(IncomingDescription.class)
+                        .query("select b from IncomingDescription b where b.id1C = :id1C1")
+                        .parameter("id1C1", s)
+                        .optional()).ifPresent(payment::setIncomingDescription);
 
                 dataManager.save(payment);
             }
