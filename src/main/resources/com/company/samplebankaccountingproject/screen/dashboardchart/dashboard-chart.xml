@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<fragment xmlns="http://jmix.io/schema/ui/fragment" xmlns:chart="http://jmix.io/schema/ui/charts">
+    <layout>
+        <chart:pieChart id="pie3dChart"
+                        angle="30"
+                        depth3D="15"
+                        height="100%"
+                        outlineAlpha="0.4"
+                        width="100%"
+                        titleField="customer"
+                        valueField="sum"/>
+        <button id="loadFrom1C" visible="false" caption="Load data from 1C"/>
+    </layout>
+</fragment>
