@@ -1,4 +1,5 @@
 <window xmlns="http://jmix.io/schema/ui/window"
+        xmlns:dashboard="http://jmix.io/schema/dashboards/ui"
         caption="msg://application.caption">
 
     <layout>
@@ -42,6 +43,10 @@
                       stylename="jmix-workarea"
                       height="100%">
                 <initialLayout spacing="true" margin="true">
+                    <dashboard:dashboard id="mainDashboard"
+                                         code="main-dashboard"
+                                         timerDelay="60">
+                    </dashboard:dashboard>
                 </initialLayout>
             </workArea>
         </cssLayout>
