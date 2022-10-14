@@ -39,6 +39,7 @@
                 dataLoader="paymentsDl">
             <properties include=".*"/>
         </filter>
+        <button id="paymentsLoadBtn" caption="msg://paymentsLoadBtn.caption"/>
         <groupTable id="paymentsTable"
                     width="100%"
                     dataContainer="paymentsDc">
