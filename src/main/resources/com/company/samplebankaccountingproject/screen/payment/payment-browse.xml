@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://jmix.io/schema/ui/window"
+        xmlns:c="http://jmix.io/schema/ui/jpql-condition"
+        caption="msg://paymentBrowse.caption"
+        focusComponent="paymentsTable">
+    <data readOnly="true">
+        <collection id="paymentsDc"
+                    class="com.company.samplebankaccountingproject.entity.Payment">
+            <fetchPlan extends="_base">
+                <property name="customer" fetchPlan="_base"/>
+                <property name="incomingDescription" fetchPlan="_base"/>
+                <property name="bankAccount" fetchPlan="_base"/>
+            </fetchPlan>
+            <loader id="paymentsDl">
+                <query>
+                    <![CDATA[select e from Payment e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+        <screenSettings id="settingsFacet" auto="true"/>
+    </facets>
+    <actions>
+        <action id="lookupSelectAction"
+                caption="msg:///actions.Select"
+                icon="LOOKUP_OK"
+                primary="true"
+                shortcut="${COMMIT_SHORTCUT}"/>
+        <action id="lookupCancelAction"
+                caption="msg:///actions.Cancel"
+                icon="LOOKUP_CANCEL"/>
+    </actions>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="paymentsTable" spacing="true">
+        <filter id="filter"
+                dataLoader="paymentsDl">
+            <properties include=".*"/>
+        </filter>
+        <groupTable id="paymentsTable"
+                    width="100%"
+                    dataContainer="paymentsDc">
+            <actions>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
+            </actions>
+            <columns>
+                <column id="date"/>
+                <column id="number"/>
+                <column id="customer"/>
+                <column id="incomingDescription"/>
+                <column id="bankAccount"/>
+                <column id="sum"/>
+            </columns>
+            <simplePagination/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn" action="paymentsTable.create"/>
+                <button id="editBtn" action="paymentsTable.edit"/>
+                <button id="removeBtn" action="paymentsTable.remove"/>
+            </buttonsPanel>
+        </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
+    </layout>
+</window>

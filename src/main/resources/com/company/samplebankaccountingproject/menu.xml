@@ -9,6 +9,12 @@
         <item screen="User.browse"
               caption="msg://com.company.samplebankaccountingproject.screen.user/UserBrowse.caption"/>
         <item screen="themeSettingsScreen" caption="msg://io.jmix.ui.app.themesettings/themeSettings.caption"/>
+        <item screen="BankAccount.browse"
+              caption="msg://com.company.samplebankaccountingproject.screen.bankaccount/bankAccountBrowse.menu"/>
+        <item screen="IncomingDescription.browse"
+              caption="msg://com.company.samplebankaccountingproject.screen.incomingdescription/incomingDescriptionBrowse.menu"/>
+        <item screen="Payment.browse"
+              caption="msg://com.company.samplebankaccountingproject.screen.payment/paymentBrowse.menu"/>
     </menu>
 
 </menu-config>

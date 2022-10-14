@@ -35,10 +35,10 @@ public class DashboardChart extends ScreenFragment {
 
     private void updateChart() {
         List<KeyValueEntity> values =
-                dataManager.loadValues("select customer.name, sum(e.sum) total " +
+                dataManager.loadValues("select bankAccount.name, sum(e.sum) total " +
                                 "from Payment e " +
-                                "left join e.customer customer " +
-                                "group by customer.name")
+                                "left join e.bankAccount bankAccount " +
+                                "group by bankAccount.name")
                         .properties("name", "sum")
                         .list();
         for (KeyValueEntity value : values) {
