@@ -16,7 +16,6 @@ import io.jmix.ui.screen.UiDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
 
 @UiController("DashboardChart")
 @UiDescriptor("dashboard-chart.xml")
@@ -71,7 +70,8 @@ public class DashboardChart extends ScreenFragment {
             exchangeOData.loadCustomers();
             exchangeOData.loadBankAccounts();
             exchangeOData.loadIncomingDescriptions();
-            exchangeOData.loadDocuments();
+            exchangeOData.loadQuotes();
+            exchangeOData.loadPayments();
 
             notifications.create()
                     .withDescription("Data has been loaded")

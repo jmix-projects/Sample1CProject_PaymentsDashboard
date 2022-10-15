@@ -14,7 +14,8 @@ import java.util.UUID;
 @Table(name = "PAYMENT", indexes = {
         @Index(name = "IDX_PAYMENT_CUSTOMER", columnList = "CUSTOMER_ID"),
         @Index(name = "IDX_PAYMENT_INCOMINGDESCRIPTIO", columnList = "INCOMING_DESCRIPTION_ID"),
-        @Index(name = "IDX_PAYMENT_BANK_ACCOUNT", columnList = "BANK_ACCOUNT_ID")
+        @Index(name = "IDX_PAYMENT_BANK_ACCOUNT", columnList = "BANK_ACCOUNT_ID"),
+        @Index(name = "IDX_PAYMENT_QUOTE", columnList = "QUOTE_ID")
 })
 @Entity
 public class Payment {
@@ -36,6 +37,10 @@ public class Payment {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     private Customer customer;
 
+    @JoinColumn(name = "QUOTE_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Quote quote;
+
     @JoinColumn(name = "INCOMING_DESCRIPTION_ID")
     @OneToOne(fetch = FetchType.LAZY)
     private IncomingDescription incomingDescription;
@@ -47,6 +52,14 @@ public class Payment {
     @NumberFormat(pattern = "#,##0.##")
     @Column(name = "SUM_", precision = 15, scale = 2)
     private BigDecimal sum;
+
+    public Quote getQuote() {
+        return quote;
+    }
+
+    public void setQuote(Quote quote) {
+        this.quote = quote;
+    }
 
     public BigDecimal getSum() {
         return sum;

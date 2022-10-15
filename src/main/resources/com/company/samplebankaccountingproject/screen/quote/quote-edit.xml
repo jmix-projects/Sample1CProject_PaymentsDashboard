@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <window xmlns="http://jmix.io/schema/ui/window"
-        caption="msg://paymentEdit.caption"
+        caption="msg://quoteEdit.caption"
         focusComponent="form">
     <data>
-        <instance id="paymentDc"
-                  class="com.company.samplebankaccountingproject.entity.Payment">
+        <instance id="quoteDc"
+                  class="com.company.samplebankaccountingproject.entity.Quote">
             <fetchPlan extends="_base">
-                <property fetchPlan="_base" name="customer"/>
-                <property fetchPlan="_base" name="incomingDescription"/>
-                <property fetchPlan="_base" name="bankAccount"/>
-                <property fetchPlan="_base" name="quote"/>
+                <property name="customer" fetchPlan="_base"/>
             </fetchPlan>
             <loader/>
         </instance>
@@ -30,7 +27,7 @@
     <dialogMode height="600"
                 width="800"/>
     <layout spacing="true" expand="editActions">
-        <form id="form" dataContainer="paymentDc">
+        <form id="form" dataContainer="quoteDc">
             <column width="350px">
                 <dateField id="dateField" property="date"/>
                 <textField id="numberField" property="number"/>
@@ -40,25 +37,7 @@
                         <action id="entityClear" type="entity_clear"/>
                     </actions>
                 </entityPicker>
-                <entityPicker id="incomingDescriptionField" property="incomingDescription">
-                    <actions>
-                        <action id="entityLookup" type="entity_lookup"/>
-                        <action id="entityClear" type="entity_clear"/>
-                    </actions>
-                </entityPicker>
-                <entityPicker id="bankAccountField" property="bankAccount">
-                    <actions>
-                        <action id="entityLookup" type="entity_lookup"/>
-                        <action id="entityClear" type="entity_clear"/>
-                    </actions>
-                </entityPicker>
-                <entityPicker id="quoteField" property="quote">
-                    <actions>
-                        <action id="entityLookup" type="entity_lookup"/>
-                        <action id="entityClear" type="entity_clear"/>
-                    </actions>
-                </entityPicker>
-                <textField id="sumField" property="sum"/>
+                <textField id="id1CField" property="id1C"/>
             </column>
         </form>
         <hbox id="editActions" spacing="true">

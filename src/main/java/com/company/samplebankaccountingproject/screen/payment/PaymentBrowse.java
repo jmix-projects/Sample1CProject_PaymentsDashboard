@@ -1,7 +1,6 @@
 package com.company.samplebankaccountingproject.screen.payment;
 
 import com.company.samplebankaccountingproject.app.ExchangeOData;
-import io.jmix.core.DataManager;
 import io.jmix.ui.Notifications;
 import io.jmix.ui.component.Button;
 import io.jmix.ui.model.CollectionLoader;
@@ -26,7 +25,8 @@ public class PaymentBrowse extends StandardLookup<Payment> {
             exchangeOData.loadCustomers();
             exchangeOData.loadIncomingDescriptions();
             exchangeOData.loadBankAccounts();
-            exchangeOData.loadDocuments();
+            exchangeOData.loadQuotes();
+            exchangeOData.loadPayments();
             paymentsDl.load();
         } catch (Exception e) {
             notifications.create(Notifications.NotificationType.ERROR)

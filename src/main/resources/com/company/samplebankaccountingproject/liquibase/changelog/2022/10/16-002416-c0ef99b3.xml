@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.11.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1" author="sampleBankAccountingProject">
+        <createTable tableName="QUOTE">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_QUOTE"/>
+            </column>
+            <column name="DATE_" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NUMBER_" type="VARCHAR(20)"/>
+            <column name="CUSTOMER_ID" type="UUID"/>
+            <column name="ID1C" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="sampleBankAccountingProject">
+        <addColumn tableName="PAYMENT">
+            <column name="QUOTE_ID" type="UUID"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="3" author="sampleBankAccountingProject">
+        <createIndex indexName="IDX_PAYMENT_QUOTE" tableName="PAYMENT">
+            <column name="QUOTE_ID"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="QUOTE_ID" baseTableName="PAYMENT" constraintName="FK_PAYMENT_ON_QUOTE"
+                                 referencedColumnNames="ID" referencedTableName="QUOTE"/>
+    </changeSet>
+    <changeSet id="4" author="sampleBankAccountingProject">
+        <createIndex indexName="IDX_QUOTE_CUSTOMER" tableName="QUOTE">
+            <column name="CUSTOMER_ID"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="CUSTOMER_ID" baseTableName="QUOTE"
+                                 constraintName="FK_QUOTE_ON_CUSTOMER" referencedColumnNames="ID"
+                                 referencedTableName="CUSTOMER"/>
+    </changeSet>
+</databaseChangeLog>

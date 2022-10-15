@@ -217,7 +217,65 @@ public class ExchangeOData {
         }
     }
 
-    public void loadDocuments() {
+    public void loadQuotes() {
+        ODataSettings oDataSettings = appSettings.load(ODataSettings.class);
+
+        String baseURL = oDataSettings.getODataURL();
+        Date startDate = oDataSettings.getStartDate();
+        if (startDate == null) {
+            startDate = new Date(System.currentTimeMillis());
+        }
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        URI docURI =
+                client.newURIBuilder(baseURL)
+                        .appendEntitySetSegment("Document_СчетНаОплатуПокупателю")
+                        .addCustomQueryOption("$select",
+                                "Ref_Key,Date,Number,Контрагент_Key")
+                        .addCustomQueryOption("$filter",
+                                "Date ge datetime'" + formatter.format(startDate) + "T00:00:00'")
+                        .build();
+
+        ClientEntitySetIterator<ClientEntitySet, ClientEntity> docIterator = getIterator(docURI);
+
+        while (docIterator.hasNext()) {
+            ClientEntity ce = docIterator.next();
+
+            Optional<String> refKey = getStringValue(ce, "Ref_Key");
+            Optional<String> docNumber = getStringValue(ce, "Number");
+            Optional<Date> docDate = getDateValue(ce, "Date");
+            if (refKey.isEmpty() || docNumber.isEmpty() || docDate.isEmpty()) {
+                continue;
+            }
+
+            Optional<Quote> optional = dataManager.load(Quote.class)
+                    .query("select q from Quote q " +
+                            "where q.number = :number1 " +
+                            "and q.date = :date1")
+                    .parameter("date1", docDate.get())
+                    .parameter("number1", docNumber.get())
+                    .optional();
+            if (optional.isEmpty()) {
+                Quote quote = dataManager.create(Quote.class);
+                quote.setId(UUID.randomUUID());
+                quote.setNumber(docNumber.get());
+                quote.setDate(docDate.get());
+                getStringValue(ce, "Ref_Key")
+                        .ifPresent(quote::setId1C);
+
+                Optional<String> customerId = getStringValue(ce, "Контрагент_Key");
+                customerId.flatMap(s -> dataManager.load(Customer.class)
+                        .query("select c from Customer c where c.id1C = :id1C1")
+                        .parameter("id1C1", s)
+                        .optional()).ifPresent(quote::setCustomer);
+
+                dataManager.save(quote);
+            }
+        }
+    }
+
+    public void loadPayments() {
         ODataSettings oDataSettings = appSettings.load(ODataSettings.class);
 
         String baseURL = oDataSettings.getODataURL();
@@ -230,7 +288,7 @@ public class ExchangeOData {
                 client.newURIBuilder(baseURL)
                         .appendEntitySetSegment("Document_ПоступлениеНаРасчетныйСчет_РасшифровкаПлатежа")
                         .addCustomQueryOption("$select",
-                                "Ref_Key,СчетНаОплату,СуммаПлатежа")
+                                "Ref_Key,СчетНаОплату_Key,СуммаПлатежа")
                         .build();
 
         ClientEntitySetIterator<ClientEntitySet, ClientEntity> tabIterator = getIterator(tabURI);
@@ -278,6 +336,7 @@ public class ExchangeOData {
                     sum = Double.valueOf((Integer) cv.toValue());
                 }
             }
+            Optional<String> quoteId = getStringValue(ceTable, "СчетНаОплату_Key");
 
             Optional<Payment> optional = dataManager.load(Payment.class)
                     .query("select p from Payment p " +
@@ -319,6 +378,12 @@ public class ExchangeOData {
                         .query("select b from IncomingDescription b where b.id1C = :id1C1")
                         .parameter("id1C1", s)
                         .optional()).ifPresent(payment::setIncomingDescription);
+
+                quoteId.flatMap(s -> dataManager.load(Quote.class)
+                        .query("select q from Quote q " +
+                                "where q.id1C = :id1C1")
+                        .parameter("id1C1", s)
+                        .optional()).ifPresent(payment::setQuote);
 
                 dataManager.save(payment);
             }
