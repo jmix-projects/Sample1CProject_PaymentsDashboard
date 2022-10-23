@@ -39,7 +39,6 @@
                 dataLoader="paymentsDl">
             <properties include=".*"/>
         </filter>
-        <button id="paymentsLoadBtn" caption="msg://paymentsLoadBtn.caption"/>
         <groupTable id="paymentsTable"
                     width="100%"
                     dataContainer="paymentsDc">
@@ -62,6 +61,7 @@
                 <button id="createBtn" action="paymentsTable.create"/>
                 <button id="editBtn" action="paymentsTable.edit"/>
                 <button id="removeBtn" action="paymentsTable.remove"/>
+                <button id="paymentsLoadBtn" caption="msg://paymentsLoadBtn.caption"/>
             </buttonsPanel>
         </groupTable>
         <hbox id="lookupActions" spacing="true" visible="false">

@@ -33,6 +33,7 @@ dependencies {
     implementation 'io.jmix.datatools:jmix-datatools-ui-starter'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.jetbrains:annotations:20.1.0'
 
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -55,6 +56,8 @@ dependencies {
     implementation 'io.jmix.ui:jmix-charts-starter'
     widgets 'io.jmix.ui:jmix-charts-widgets'
     widgets 'io.jmix.ui:jmix-ui-widgets'
+    implementation 'io.jmix.dashboards:jmix-dashboards-starter'
+    implementation 'io.jmix.dashboards:jmix-dashboards-ui-starter'
 }
 
 test {
