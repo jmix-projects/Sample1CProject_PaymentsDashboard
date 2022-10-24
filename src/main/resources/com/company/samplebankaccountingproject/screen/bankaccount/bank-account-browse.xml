@@ -52,6 +52,7 @@
             <simplePagination/>
             <buttonsPanel id="buttonsPanel"
                           alwaysVisible="true">
+                <button id="bankAccountsLoadBtn" caption="msg://bankAccountsLoadBtn.caption"/>
                 <button id="createBtn" action="bankAccountsTable.create"/>
                 <button id="editBtn" action="bankAccountsTable.edit"/>
                 <button id="removeBtn" action="bankAccountsTable.remove"/>

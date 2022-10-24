@@ -2,12 +2,16 @@ package com.company.samplebankaccountingproject.screen.dashboardchart;
 
 import com.company.samplebankaccountingproject.app.ExchangeOData;
 import com.company.samplebankaccountingproject.entity.Payment;
+import com.google.common.collect.ImmutableMap;
 import io.jmix.charts.component.PieChart;
 import io.jmix.core.DataManager;
 import io.jmix.core.entity.KeyValueEntity;
 import io.jmix.dashboardsui.annotation.DashboardWidget;
+import io.jmix.dashboardsui.event.DashboardEvent;
+import io.jmix.dashboardsui.widget.RefreshableWidget;
 import io.jmix.ui.Notifications;
 import io.jmix.ui.component.Button;
+import io.jmix.ui.data.impl.ListDataProvider;
 import io.jmix.ui.data.impl.MapDataItem;
 import io.jmix.ui.screen.ScreenFragment;
 import io.jmix.ui.screen.Subscribe;
@@ -20,7 +24,7 @@ import java.util.List;
 @UiController("DashboardChart")
 @UiDescriptor("dashboard-chart.xml")
 @DashboardWidget(name = "Payments-chart")
-public class DashboardChart extends ScreenFragment {
+public class DashboardChart extends ScreenFragment implements RefreshableWidget {
     @Autowired
     private PieChart pie3dChart;
     @Autowired
@@ -34,18 +38,20 @@ public class DashboardChart extends ScreenFragment {
 
     private void updateChart() {
         List<KeyValueEntity> values =
-                dataManager.loadValues("select bankAccount.name, sum(e.sum) total " +
+                dataManager.loadValues("select customer.name, sum(e.sum) total " +
                                 "from Payment e " +
-                                "left join e.bankAccount bankAccount " +
-                                "group by bankAccount.name")
+                                "left join e.customer customer " +
+                                "group by customer.name")
                         .properties("name", "sum")
                         .list();
+        ListDataProvider dataProvider = new ListDataProvider();
         for (KeyValueEntity value : values) {
-            pie3dChart.addData(
-                    MapDataItem.of("customer", value.getValue("name"),
+            dataProvider.addItem(new MapDataItem(
+                    ImmutableMap.of("customer", value.getValue("name"),
                             "sum", value.getValue("sum"))
-            );
+            ));
         }
+        pie3dChart.setDataProvider(dataProvider);
     }
 
     @Subscribe
@@ -67,11 +73,9 @@ public class DashboardChart extends ScreenFragment {
     public void onLoadFrom1CClick(Button.ClickEvent event) {
         try {
 
-            exchangeOData.loadCustomers();
-            exchangeOData.loadBankAccounts();
-            exchangeOData.loadIncomingDescriptions();
+            exchangeOData.loadReferences();
             exchangeOData.loadQuotes();
-            exchangeOData.loadPayments();
+            exchangeOData.loadPayments(null);
 
             notifications.create()
                     .withDescription("Data has been loaded")
@@ -89,5 +93,10 @@ public class DashboardChart extends ScreenFragment {
                     .withDescription(e.getMessage())
                     .show();
         }
+    }
+
+    @Override
+    public void refresh(DashboardEvent dashboardEvent) {
+        updateChart();
     }
 }

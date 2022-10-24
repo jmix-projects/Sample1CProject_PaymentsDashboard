@@ -50,6 +50,7 @@
             <simplePagination/>
             <buttonsPanel id="buttonsPanel"
                           alwaysVisible="true">
+                <button id="incomingDescriptionLoadBtn" caption="msg://incomingDescriptionLoadBtn.caption"/>
                 <button id="createBtn" action="incomingDescriptionsTable.create"/>
                 <button id="editBtn" action="incomingDescriptionsTable.edit"/>
                 <button id="removeBtn" action="incomingDescriptionsTable.remove"/>

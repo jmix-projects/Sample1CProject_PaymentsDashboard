@@ -66,6 +66,14 @@ public class CustomerBrowse extends StandardLookup<Customer> {
 
     @Subscribe("customersLoadBtn")
     public void onCustomersLoadBtnClick(Button.ClickEvent event) {
-        exchangeOData.loadCustomers();
+        try {
+            exchangeOData.loadCustomers();
+            customersDl.load();
+        } catch (Exception e) {
+            notifications.create(Notifications.NotificationType.ERROR)
+                    .withCaption("Load customers error")
+                    .withDescription(e.toString())
+                    .show();
+        }
     }
 }

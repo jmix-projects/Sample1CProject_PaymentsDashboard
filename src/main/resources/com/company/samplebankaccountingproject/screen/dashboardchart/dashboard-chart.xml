@@ -8,7 +8,13 @@
                         outlineAlpha="0.4"
                         width="100%"
                         titleField="customer"
-                        valueField="sum"/>
+                        valueField="sum"
+                        labelsEnabled="true">
+            <chart:legend equalWidths="true"
+                          position="RIGHT"
+                          valueAlign="RIGHT"
+                          valueWidth="100"/>
+        </chart:pieChart>
         <button id="loadFrom1C" visible="false" caption="Load data from 1C"/>
     </layout>
 </fragment>

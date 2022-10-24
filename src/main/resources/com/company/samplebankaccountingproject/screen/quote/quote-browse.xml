@@ -54,6 +54,7 @@
             <simplePagination/>
             <buttonsPanel id="buttonsPanel"
                           alwaysVisible="true">
+                <button id="quotesLoadBtn" caption="msg://quotesLoadBtn.caption"/>
                 <button id="createBtn" action="quotesTable.create"/>
                 <button id="editBtn" action="quotesTable.edit"/>
                 <button id="removeBtn" action="quotesTable.remove"/>

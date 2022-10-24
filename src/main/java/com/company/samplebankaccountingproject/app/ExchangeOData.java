@@ -73,6 +73,12 @@ public class ExchangeOData {
         }
     }
 
+    public void loadReferences() {
+        loadCustomers();
+        loadBankAccounts();
+        loadIncomingDescriptions();
+    }
+
     public void loadCustomers() {
         ODataSettings oDataSettings = appSettings.load(ODataSettings.class);
 
@@ -275,7 +281,7 @@ public class ExchangeOData {
         }
     }
 
-    public void loadPayments() {
+    public void loadPayments(Date date) {
         ODataSettings oDataSettings = appSettings.load(ODataSettings.class);
 
         String baseURL = oDataSettings.getODataURL();
@@ -303,6 +309,14 @@ public class ExchangeOData {
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
+        String dateFilter;
+        if (date == null) {
+            dateFilter = " and Date ge datetime'" + formatter.format(startDate) + "T00:00:00'";
+        } else {
+            dateFilter = " and Date ge datetime'" + formatter.format(date) + "T00:00:00'" +
+                            " and Date le datetime'" + formatter.format(date) + "T23:59:59'";
+        }
+
         URI docURI =
                 client.newURIBuilder(baseURL)
                         .appendEntitySetSegment("Document_ПоступлениеНаРасчетныйСчет")
@@ -310,8 +324,7 @@ public class ExchangeOData {
                                 "Ref_Key,Date,Number,СчетОрганизации_Key,Контрагент," +
                                         "ВидОперации,СтатьяДвиженияДенежныхСредств_Key")
                         .addCustomQueryOption("$filter",
-                                "ВидОперации eq 'ОплатаПокупателя'" +
-                                        " and Date ge datetime'" + formatter.format(startDate) + "T00:00:00'")
+                                "ВидОперации eq 'ОплатаПокупателя'" + dateFilter)
                         .build();
 
         ClientEntitySetIterator<ClientEntitySet, ClientEntity> docIterator = getIterator(docURI);
