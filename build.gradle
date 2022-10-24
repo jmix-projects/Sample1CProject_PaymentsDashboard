@@ -58,6 +58,7 @@ dependencies {
     widgets 'io.jmix.ui:jmix-ui-widgets'
     implementation 'io.jmix.dashboards:jmix-dashboards-starter'
     implementation 'io.jmix.dashboards:jmix-dashboards-ui-starter'
+    implementation 'io.jmix.translations:jmix-translations-ru'
 }
 
 test {
