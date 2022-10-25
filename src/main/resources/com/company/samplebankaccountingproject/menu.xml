@@ -2,7 +2,7 @@
 <menu-config xmlns="http://jmix.io/schema/ui/menu">
 
     <menu id="Payments" caption="msg://com.company.samplebankaccountingproject/menu.application"
-          insertBefore="dashboard">
+          insertBefore="dashboard" expanded="true">
         <item screen="Payment.browse"
               caption="msg://com.company.samplebankaccountingproject.screen.payment/paymentBrowse.menu"/>
         <item screen="Quote.browse"

@@ -30,7 +30,7 @@
                 <textField id="nameField" property="name"/>
                 <textField id="bankField" property="bank"/>
                 <textField id="accountNumberField" property="accountNumber"/>
-                <textField id="id1CField" property="id1C"/>
+                <textField id="id1CField" property="id1C" editable="false"/>
             </column>
         </form>
         <hbox id="editActions" spacing="true">

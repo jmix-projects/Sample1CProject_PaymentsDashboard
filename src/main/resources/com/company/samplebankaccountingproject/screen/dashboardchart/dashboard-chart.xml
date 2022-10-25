@@ -15,6 +15,6 @@
                           valueAlign="RIGHT"
                           valueWidth="100"/>
         </chart:pieChart>
-        <button id="loadFrom1C" visible="false" caption="Load data from 1C"/>
+        <button id="loadFrom1C" visible="false" caption="msg://loadFrom1C.caption"/>
     </layout>
 </fragment>

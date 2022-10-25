@@ -37,7 +37,7 @@
                         <action id="entityClear" type="entity_clear"/>
                     </actions>
                 </entityPicker>
-                <textField id="id1CField" property="id1C"/>
+                <textField id="id1CField" property="id1C" editable="false"/>
             </column>
         </form>
         <hbox id="editActions" spacing="true">
