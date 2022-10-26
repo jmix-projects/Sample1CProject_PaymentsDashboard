@@ -77,6 +77,7 @@ public class ExchangeOData {
         loadCustomers();
         loadBankAccounts();
         loadIncomingDescriptions();
+        loadQuotes();
     }
 
     public void loadCustomers() {

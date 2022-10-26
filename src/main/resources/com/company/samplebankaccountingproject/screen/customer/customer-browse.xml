@@ -59,10 +59,10 @@
             <simplePagination/>
             <buttonsPanel id="buttonsPanel"
                           alwaysVisible="true">
-                <button id="customersLoadBtn" caption="msg://customersLoad.caption"/>
                 <button id="createBtn" caption="Create"/>
                 <button id="editBtn" action="customersTable.edit"/>
                 <button id="removeBtn" action="customersTable.remove"/>
+                <button id="customersLoadBtn" caption="msg://customersLoad.caption"/>
             </buttonsPanel>
         </groupTable>
         <hbox id="lookupActions" spacing="true" visible="false">

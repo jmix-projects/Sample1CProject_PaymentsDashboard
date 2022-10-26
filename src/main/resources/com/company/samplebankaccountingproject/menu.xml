@@ -3,6 +3,8 @@
 
     <menu id="Payments" caption="msg://com.company.samplebankaccountingproject/menu.application"
           insertBefore="dashboard" expanded="true">
+        <item bean="exchangeOData" beanMethod="loadReferences" id="synchronizeWith1C"
+              caption="msg://com.company.samplebankaccountingproject/menu_config.synchronizeWith1C"/>
         <item screen="Payment.browse"
               caption="msg://com.company.samplebankaccountingproject.screen.payment/paymentBrowse.menu"/>
         <item screen="Quote.browse"
@@ -17,8 +19,8 @@
             <item screen="IncomingDescription.browse"
                   caption="msg://com.company.samplebankaccountingproject.screen.incomingdescription/incomingDescriptionBrowse.menu"
                   icon="BARS"/>
-            <item screen="User.browse" caption="msg://com.company.samplebankaccountingproject.screen.user/UserBrowse.caption"
-                  icon="USERS"/>
+            <item screen="User.browse"
+                  caption="msg://com.company.samplebankaccountingproject.screen.user/UserBrowse.caption" icon="USERS"/>
             <item screen="themeSettingsScreen" caption="msg://io.jmix.ui.app.themesettings/themeSettings.caption"/>
         </menu>
     </menu>

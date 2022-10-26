@@ -58,10 +58,10 @@
             <simplePagination/>
             <buttonsPanel id="buttonsPanel"
                           alwaysVisible="true">
-                <button id="paymentsLoadBtn" caption="msg://paymentsLoadBtn.caption"/>
                 <button id="createBtn" action="paymentsTable.create"/>
                 <button id="editBtn" action="paymentsTable.edit"/>
                 <button id="removeBtn" action="paymentsTable.remove"/>
+                <button id="paymentsLoadBtn" caption="msg://paymentsLoadBtn.caption"/>
             </buttonsPanel>
         </groupTable>
         <hbox id="lookupActions" spacing="true" visible="false">
