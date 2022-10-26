@@ -11,6 +11,8 @@ import io.jmix.dashboardsui.event.DashboardEvent;
 import io.jmix.dashboardsui.widget.RefreshableWidget;
 import io.jmix.ui.Notifications;
 import io.jmix.ui.component.Button;
+import io.jmix.ui.component.DateField;
+import io.jmix.ui.component.HasValue;
 import io.jmix.ui.data.impl.ListDataProvider;
 import io.jmix.ui.data.impl.MapDataItem;
 import io.jmix.ui.screen.ScreenFragment;
@@ -19,7 +21,9 @@ import io.jmix.ui.screen.UiController;
 import io.jmix.ui.screen.UiDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.*;
 
 @UiController("DashboardChart")
 @UiDescriptor("dashboard-chart.xml")
@@ -35,13 +39,22 @@ public class DashboardChart extends ScreenFragment implements RefreshableWidget 
     private ExchangeOData exchangeOData;
     @Autowired
     private Notifications notifications;
+    @Autowired
+    private DateField<Date> startDate;
+    @Autowired
+    private DateField<Date> endDate;
 
     private void updateChart() {
+        Optional<Date> startDateOpt = Optional.ofNullable(startDate.getValue());
+        Optional<Date> endDateOpt = Optional.ofNullable(endDate.getValue());
         List<KeyValueEntity> values =
-                dataManager.loadValues("select customer.name, sum(e.sum) total " +
-                                "from Payment e " +
-                                "left join e.customer customer " +
+                dataManager.loadValues("select customer.name, sum(p.sum) total " +
+                                "from Payment p " +
+                                "left join p.customer customer " +
+                                "where p.date between :startDate and :endDate " +
                                 "group by customer.name")
+                        .parameter("startDate", startDateOpt.orElseGet(Date::new))
+                        .parameter("endDate", endDateOpt.orElseGet(Date::new))
                         .properties("name", "sum")
                         .list();
         ListDataProvider dataProvider = new ListDataProvider();
@@ -56,6 +69,19 @@ public class DashboardChart extends ScreenFragment implements RefreshableWidget 
 
     @Subscribe
     public void onInit(InitEvent event) {
+        Date curDate = new Date();
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(curDate);
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+        setTimeToBeginningOfDay(calendar);
+        startDate.setValue(calendar.getTime());
+
+        calendar.setTime(curDate);
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        setTimeToBeginningOfDay(calendar);
+        endDate.setValue(calendar.getTime());
+
         if(dataManager.load(Payment.class)
                 .query("select p from Payment p")
                 .optional()
@@ -98,5 +124,22 @@ public class DashboardChart extends ScreenFragment implements RefreshableWidget 
     @Override
     public void refresh(DashboardEvent dashboardEvent) {
         updateChart();
+    }
+
+    @Subscribe("startDate")
+    public void onStartDateValueChange(HasValue.ValueChangeEvent<Date> event) {
+        updateChart();
+    }
+
+    @Subscribe("endDate")
+    public void onEndDateValueChange(HasValue.ValueChangeEvent<Date> event) {
+        updateChart();
+    }
+
+    private static void setTimeToBeginningOfDay(Calendar calendar) {
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
     }
 }
