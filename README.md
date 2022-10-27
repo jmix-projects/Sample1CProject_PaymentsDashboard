@@ -9,7 +9,7 @@
 5. Зайти в раздел меню Dashboard - Dashboards и нажать на кнопку создать новый
 6. В окне нового Дашборда заполнить параметры: Title -> Главный дашборд, Code -> main-dashboard, Refresh period -> 10
 7. В окне нового Дашборда мышкой перетащить из контейнера Widgets элемент Payments-chart на канву
-8. В новом окне редкатирования виджета заполнить параметры: Caption -> Платежи клиентов, Widget id -> Customer payments, Show widget caption -> True
+8. В новом окне редактирования виджета заполнить параметры: Caption -> Платежи клиентов, Widget id -> Customer payments, Show widget caption -> True
 9. Закрыть нажатием на кнопку Ok окно Widget editor
 10. Закрыть нажатием на кнопку Ok окно Dashboard editor
 11. Сделать новый логин в приложение. Дашборд должен появится на главном экране
