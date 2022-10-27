@@ -46,6 +46,7 @@
                 <action id="create" type="create"/>
                 <action id="edit" type="edit"/>
                 <action id="remove" type="remove"/>
+                <action id="runReport" type="runReport"/>
             </actions>
             <columns>
                 <column id="date"/>
@@ -62,6 +63,7 @@
                 <button id="editBtn" action="paymentsTable.edit"/>
                 <button id="removeBtn" action="paymentsTable.remove"/>
                 <button id="paymentsLoadBtn" caption="msg://paymentsLoadBtn.caption"/>
+                <button id="paymentsTableRunReportBtn" action="paymentsTable.runReport"/>
             </buttonsPanel>
         </groupTable>
         <hbox id="lookupActions" spacing="true" visible="false">

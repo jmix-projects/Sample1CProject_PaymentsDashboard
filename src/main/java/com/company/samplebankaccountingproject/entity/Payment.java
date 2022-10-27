@@ -1,6 +1,8 @@
 package com.company.samplebankaccountingproject.entity;
 
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
+import io.jmix.core.metamodel.annotation.DependsOnProperties;
+import io.jmix.core.metamodel.annotation.InstanceName;
 import io.jmix.core.metamodel.annotation.JmixEntity;
 import io.jmix.core.metamodel.annotation.NumberFormat;
 
@@ -115,5 +117,11 @@ public class Payment {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    @InstanceName
+    @DependsOnProperties({"number", "date", "bankAccount", "customer"})
+    public String getInstanceName() {
+        return String.format("%s %s %s %s", number, date, bankAccount.getName(), customer.getName());
     }
 }
