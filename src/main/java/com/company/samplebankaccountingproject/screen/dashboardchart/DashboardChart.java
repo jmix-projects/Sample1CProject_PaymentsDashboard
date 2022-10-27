@@ -7,8 +7,6 @@ import io.jmix.charts.component.PieChart;
 import io.jmix.core.DataManager;
 import io.jmix.core.entity.KeyValueEntity;
 import io.jmix.dashboardsui.annotation.DashboardWidget;
-import io.jmix.dashboardsui.event.DashboardEvent;
-import io.jmix.dashboardsui.widget.RefreshableWidget;
 import io.jmix.ui.Notifications;
 import io.jmix.ui.component.Button;
 import io.jmix.ui.component.DateField;
@@ -28,7 +26,7 @@ import java.util.*;
 @UiController("DashboardChart")
 @UiDescriptor("dashboard-chart.xml")
 @DashboardWidget(name = "Payments-chart")
-public class DashboardChart extends ScreenFragment implements RefreshableWidget {
+public class DashboardChart extends ScreenFragment {
     @Autowired
     private PieChart pie3dChart;
     @Autowired
