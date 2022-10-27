@@ -121,11 +121,6 @@ public class DashboardChart extends ScreenFragment implements RefreshableWidget 
         }
     }
 
-    @Override
-    public void refresh(DashboardEvent dashboardEvent) {
-        updateChart();
-    }
-
     @Subscribe("startDate")
     public void onStartDateValueChange(HasValue.ValueChangeEvent<Date> event) {
         updateChart();

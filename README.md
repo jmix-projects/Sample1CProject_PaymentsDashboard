@@ -1,3 +1,17 @@
-# Sample1C_WireTransferAccount
-This is a sample project to demonstrate Jmix capabilities to integrate with 1C Enterprise platform
- 
+# Sample1C_PaymentsDashboard
+Это тестовый проект, который демонстрирует возможность интеграции с платформой 1С Предприятие 8 по oData
+
+После первого запуска проекта необходимо зайти под англоязычной локалью и выполнить набор операций:
+1. Зайти в раздел меню Administration - Application Settings
+2. В поле Select application settings entity выбрать сущность ODataSettings
+3. Заполнить параметры подключения к конфигурации 1С Бухгалтерия 8: OData user, OData password, Start Date, OData URL к endpoint oData в формате http://<имя хоста>:<порт>/<имя конфигурации>/odata/standard.odata/
+4. Выполнить синхрониацию с 1С нажав на соответствующий пункт в главном меню. Дождаться окончания синхронизации
+5. Зайти в раздел меню Dashboard - Dashboards и нажать на кнопку создать новый
+6. В окне нового Дашборда заполнить параметры: Title -> Главный дашборд, Code -> main-dashboard, Refresh period -> 10
+7. В окне нового Дашборда мышкой перетащить из контейнера Widgets элемент Payments-chart на канву
+8. В новом окне редкатирования виджета заполнить параметры: Caption -> Платежи клиентов, Widget id -> Customer payments, Show widget caption -> True
+9. Закрыть нажатием на кнопку Ok окно Widget editor
+10. Закрыть нажатием на кнопку Ok окно Dashboard editor
+11. Сделать новый логин в приложение. Дашборд должен появится на главном экране
+
+Если у Вас что-то не получилось или возникли вопросы пишите на форум https://forum.jmix.ru
