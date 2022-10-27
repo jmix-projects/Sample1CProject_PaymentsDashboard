@@ -69,15 +69,15 @@ public class DashboardChart extends ScreenFragment implements RefreshableWidget 
 
     @Subscribe
     public void onInit(InitEvent event) {
-        Date curDate = new Date();
+        Date today = new Date();
         Calendar calendar = Calendar.getInstance();
 
-        calendar.setTime(curDate);
+        calendar.setTime(today);
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
         setTimeToBeginningOfDay(calendar);
         startDate.setValue(calendar.getTime());
 
-        calendar.setTime(curDate);
+        calendar.setTime(today);
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         setTimeToBeginningOfDay(calendar);
         endDate.setValue(calendar.getTime());

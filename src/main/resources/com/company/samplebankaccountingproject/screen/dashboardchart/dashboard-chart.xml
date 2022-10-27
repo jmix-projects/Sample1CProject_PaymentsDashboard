@@ -18,8 +18,10 @@
             </chart:pieChart>
             <button id="loadFrom1C" visible="false" caption="msg://loadFrom1C.caption" height="AUTO"/>
             <hbox spacing="true" height="AUTO">
-                <dateField id="startDate" caption="msg://startDate.caption" datatype="date"/>
-                <dateField id="endDate" caption="msg://endDate.caption" datatype="date"/>
+                <dateField id="startDate" caption="msg://startDate.caption" datatype="date"
+                           dateFormat="dd.MM.yyyy"/>
+                <dateField id="endDate" caption="msg://endDate.caption" datatype="date"
+                           dateFormat="dd.MM.yyyy"/>
             </hbox>
         </vbox>
     </layout>
